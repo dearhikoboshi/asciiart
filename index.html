@@ -479,7 +479,13 @@
   }
 
   fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
-  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', (e) => {
+    // input을 직접 탭한 경우엔 그대로 두고, 그 외 영역을 탭했을 때만 클릭을 위임한다.
+    // (안 그러면 iOS Safari에서 input 자체 클릭 + 버블링된 dropZone 클릭이 겹쳐
+    //  사진 선택 시트가 열리자마자 닫히는 문제가 생김)
+    if (e.target === fileInput) return;
+    fileInput.click();
+  });
   dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
   dropZone.addEventListener('drop', (e) => {
