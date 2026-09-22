@@ -190,6 +190,10 @@
         <input type="checkbox" id="personOnlyCheck">
         <label for="personOnlyCheck">인물만 추출 (배경 제거)</label>
       </div>
+      <div class="field" id="baseColorWrap">
+        <label for="baseColorInput">글자 색상</label>
+        <input type="color" id="baseColorInput" value="#111111" style="height:34px; padding:2px; cursor:pointer;">
+      </div>
     </div>
 
     <div class="controls" id="personThresholdWrap" style="display:none; margin-top:16px; margin-bottom:0;">
@@ -247,6 +251,8 @@
   const customChars = document.getElementById('customChars');
   const invertCheck = document.getElementById('invertCheck');
   const colorCheck = document.getElementById('colorCheck');
+  const baseColorInput = document.getElementById('baseColorInput');
+  const baseColorWrap = document.getElementById('baseColorWrap');
   const convertBtn = document.getElementById('convertBtn');
   const copyBtn = document.getElementById('copyBtn');
   const downloadTxtBtn = document.getElementById('downloadTxtBtn');
@@ -521,6 +527,7 @@
     const contrast = parseFloat(contrastRange.value);
     const invert = invertCheck.checked;
     const useColor = colorCheck.checked;
+    const baseColor = baseColorInput.value;
     const chars = getCharset();
     const fontSize = parseInt(fontRange.value, 10);
 
@@ -561,7 +568,7 @@
 
         line.push({
           ch: finalChar,
-          color: useColor ? `rgb(${r},${g},${b})` : null,
+          color: useColor ? `rgb(${r},${g},${b})` : baseColor,
           bold: false
         });
       }
@@ -639,8 +646,16 @@
     downloadPngBtn.disabled = false;
   }
 
+  function updateBaseColorState() {
+    const disabled = colorCheck.checked;
+    baseColorInput.disabled = disabled;
+    baseColorWrap.style.opacity = disabled ? '0.4' : '1';
+  }
+  colorCheck.addEventListener('change', updateBaseColorState);
+  updateBaseColorState();
+
   convertBtn.addEventListener('click', convert);
-  [widthRange, contrastRange, charsetSelect, customChars, invertCheck, colorCheck].forEach(el => {
+  [widthRange, contrastRange, charsetSelect, customChars, invertCheck, colorCheck, baseColorInput].forEach(el => {
     el.addEventListener('change', () => { if (currentImage) convert(); });
   });
   widthRange.addEventListener('mouseup', () => { if (currentImage) convert(); });
